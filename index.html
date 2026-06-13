@@ -14,17 +14,107 @@
             margin: 0;
             font-family: Verdana;
             background-color: #f0f0f0;
+            overflow: hidden; /* Prevents scrollbars during the animation */
         }
+        
+        .explosion-container {
+            position: relative;
+            text-align: center;
+            cursor: pointer;
+        }
+
         h1 {
             font-size: 3rem;
             text-align: center;
             padding: 0 20px;
+            user-select: none; /* Prevents text highlighting on double click */
+            transition: opacity 0.1s ease;
+        }
+
+        /* Style for the mini sentences that fly out */
+        .mini-sentence {
+            position: absolute;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 1;
+            transform: translate(-50%, -50%);
+            animation: flyOut 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        @keyframes flyOut {
+            0% {
+                transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(var(--r));
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>Muvahid is a nigger.</h1>
+    <div class="explosion-container">
+        <h1 id="blast-text">Muvahid is a nigger.</h1>
+    </div>
+
+    <script>
+    document.getElementById('blast-text').addEventListener('click', function(e) {
+        const mainText = this;
+        const container = mainText.parentElement;
+        
+        // Custom text pool for your mini sentences
+        const phrases = [
+            "he ruined jmtc!", "femboy.", "georgian.", "faggot.", 
+            "100% killed off jmtc", "Always is a nigger.", "twink.", "takfiring everyone!"
+        ];
+
+        // Instantly hide the main sentence
+        mainText.style.opacity = '0';
+        mainText.style.pointerEvents = 'none';
+
+        // Spawn 20 exploding particles
+        for (let i = 0; i < 20; i++) {
+            const span = document.createElement('span');
+            
+            span.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+            span.className = 'mini-sentence';
+
+            // Pin to center point
+            span.style.left = '50%';
+            span.style.top = '50%';
+
+            // Calculate trajectories in a 360-degree circle
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 150 + Math.random() * 250; 
+            const x = Math.cos(angle) * distance + 'px';
+            const y = Math.sin(angle) * distance + 'px';
+            const rotation = (Math.random() * 90 - 45) + 'deg';
+
+            // Send positions to CSS variables
+            span.style.setProperty('--x', x);
+            span.style.setProperty('--y', y);
+            span.style.setProperty('--r', rotation);
+
+            container.appendChild(span);
+
+            // Clean up elements when done animating
+            span.addEventListener('animationend', () => {
+                span.remove();
+            });
+        }
+
+        // Automatically bring back the main text after 1.5 seconds
+        setTimeout(() => {
+            mainText.style.opacity = '1';
+            mainText.style.pointerEvents = 'auto';
+        }, 1500);
+    });
+    </script>
 
 </body>
 </html>

@@ -4,54 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muvahid</title>
-        <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
     <style>
-        body {
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Verdana;
             background-color: #f0f0f0;
-            overflow: hidden; /* Prevents scrollbars during the animation */
+            font-family: Verdana, sans-serif;
+            overflow: hidden; /* Keeps screen perfectly still while text moves */
         }
         
         .explosion-container {
             position: relative;
-            text-align: center;
-            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         h1 {
             font-size: 3rem;
             text-align: center;
             padding: 0 20px;
-            user-select: none; /* Prevents text highlighting on double click */
-            transition: opacity 0.1s ease;
+            user-select: none;
+            opacity: 0; /* Starts hidden, then fades in later */
+            z-index: 10;
         }
 
-        /* Style for the mini sentences that fly out */
+        /* Base styles for the streaming phrases */
         .mini-sentence {
             position: absolute;
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #333;
             white-space: nowrap;
             pointer-events: none;
-            opacity: 1;
-            transform: translate(-50%, -50%);
-            animation: flyOut 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            opacity: 0;
         }
 
-        @keyframes flyOut {
+        /* Movement animation from Left to Right */
+        @keyframes streamRight {
             0% {
-                transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+                left: -20%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
                 opacity: 1;
             }
             100% {
-                transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(var(--r));
+                left: 120%;
+                opacity: 0;
+            }
+        }
+
+        /* Movement animation from Right to Left */
+        @keyframes streamLeft {
+            0% {
+                left: 120%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                left: -20%;
                 opacity: 0;
             }
         }
@@ -64,56 +93,49 @@
     </div>
 
     <script>
-    document.getElementById('blast-text').addEventListener('click', function(e) {
-        const mainText = this;
+    window.addEventListener('DOMContentLoaded', function() {
+        const mainText = document.getElementById('blast-text');
         const container = mainText.parentElement;
         
-        // Custom text pool for your mini sentences
+        // The list of phrases traveling across the viewport
         const phrases = [
-            "he ruined jmtc!", "femboy.", "georgian.", "faggot.", 
-            "100% killed off jmtc", "Always is a nigger.", "twink.", "takfiring everyone!"
+            "he destroyed jmtc!", "femboy", "twink", "georgian fag", 
+            "100% faggot", "shoot yourself.", "troon.", "fake mma fighter"
         ];
 
-        // Instantly hide the main sentence
-        mainText.style.opacity = '0';
-        mainText.style.pointerEvents = 'none';
-
-        // Spawn 20 exploding particles
-        for (let i = 0; i < 20; i++) {
+        // Spawn 25 randomly staggered phrases
+        for (let i = 0; i < 25; i++) {
             const span = document.createElement('span');
-            
             span.textContent = phrases[Math.floor(Math.random() * phrases.length)];
             span.className = 'mini-sentence';
 
-            // Pin to center point
-            span.style.left = '50%';
-            span.style.top = '50%';
+            // Random vertical positions across the layout (5% to 95% height)
+            span.style.top = (Math.random() * 90 + 5) + 'vh';
 
-            // Calculate trajectories in a 360-degree circle
-            const angle = Math.random() * Math.PI * 2;
-            const distance = 150 + Math.random() * 250; 
-            const x = Math.cos(angle) * distance + 'px';
-            const y = Math.sin(angle) * distance + 'px';
-            const rotation = (Math.random() * 90 - 45) + 'deg';
+            // Stagger their individual speeds (between 2 and 5 seconds total travel time)
+            const duration = (2 + Math.random() * 3) + 's';
+            span.style.animationDuration = duration;
 
-            // Send positions to CSS variables
-            span.style.setProperty('--x', x);
-            span.style.setProperty('--y', y);
-            span.style.setProperty('--r', rotation);
+            // Even numbers travel right, odd numbers travel left
+            if (i % 2 === 0) {
+                span.style.animationName = 'streamRight';
+            } else {
+                span.style.animationName = 'streamLeft';
+            }
 
             container.appendChild(span);
 
-            // Clean up elements when done animating
+            // Clean up elements from memory after they exit the viewing zone
             span.addEventListener('animationend', () => {
                 span.remove();
             });
         }
 
-        // Automatically bring back the main text after 1.5 seconds
+        // Smoothly fade the primary headline into the screen center after 3.5 seconds
         setTimeout(() => {
+            mainText.style.transition = 'opacity 1.5s ease';
             mainText.style.opacity = '1';
-            mainText.style.pointerEvents = 'auto';
-        }, 1500);
+        }, 3500);
     });
     </script>
 

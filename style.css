@@ -1,0 +1,49 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Verdana;
+    background-color: #f0f0f0;
+    overflow: hidden; 
+}
+
+.explosion-container {
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+}
+
+h1 {
+    font-size: 3rem;
+    text-align: center;
+    padding: 0 20px;
+    user-select: none;
+    transition: opacity 0.1s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mini-sentence {
+    position: absolute;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    animation: flyOut 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes flyOut {
+    0% {
+        transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(var(--r));
+        opacity: 0;
+    }
+}

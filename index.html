@@ -17,7 +17,7 @@
             align-items: center;
             background-color: #f0f0f0;
             font-family: Verdana, sans-serif;
-            overflow: hidden; /* Keeps screen perfectly still while text moves */
+            overflow: hidden; 
         }
         
         .explosion-container {
@@ -29,16 +29,16 @@
             align-items: center;
         }
 
+        /* Main text now stays visible in the middle the entire time */
         h1 {
             font-size: 3rem;
             text-align: center;
             padding: 0 20px;
             user-select: none;
-            opacity: 0; /* Starts hidden, then fades in later */
+            opacity: 1; 
             z-index: 10;
         }
 
-        /* Base styles for the streaming phrases */
         .mini-sentence {
             position: absolute;
             font-size: 1.2rem;
@@ -49,38 +49,38 @@
             opacity: 0;
         }
 
-        /* Movement animation from Left to Right */
+        /* Slower Left to Right animation with infinite loop visibility */
         @keyframes streamRight {
             0% {
-                left: -20%;
+                left: -25%;
                 opacity: 0;
             }
-            10% {
+            5% {
                 opacity: 1;
             }
-            90% {
+            95% {
                 opacity: 1;
             }
             100% {
-                left: 120%;
+                left: 125%;
                 opacity: 0;
             }
         }
 
-        /* Movement animation from Right to Left */
+        /* Slower Right to Left animation with infinite loop visibility */
         @keyframes streamLeft {
             0% {
-                left: 120%;
+                left: 125%;
                 opacity: 0;
             }
-            10% {
+            5% {
                 opacity: 1;
             }
-            90% {
+            95% {
                 opacity: 1;
             }
             100% {
-                left: -20%;
+                left: -25%;
                 opacity: 0;
             }
         }
@@ -94,29 +94,34 @@
 
     <script>
     window.addEventListener('DOMContentLoaded', function() {
-        const mainText = document.getElementById('blast-text');
-        const container = mainText.parentElement;
+        const container = document.querySelector('.explosion-container');
         
-        // The list of phrases traveling across the viewport
         const phrases = [
             "he destroyed jmtc!", "femboy", "twink", "georgian fag", 
             "100% faggot", "shoot yourself.", "troon.", "fake mma fighter"
         ];
 
-        // Spawn 25 randomly staggered phrases
-        for (let i = 0; i < 25; i++) {
+        // Spawn 20 phrases that loop on their own timelines
+        for (let i = 0; i < 20; i++) {
             const span = document.createElement('span');
             span.textContent = phrases[Math.floor(Math.random() * phrases.length)];
             span.className = 'mini-sentence';
 
-            // Random vertical positions across the layout (5% to 95% height)
+            // Random heights so they spread out vertically
             span.style.top = (Math.random() * 90 + 5) + 'vh';
 
-            // Stagger their individual speeds (between 2 and 5 seconds total travel time)
-            const duration = (2 + Math.random() * 3) + 's';
+            // SLOWER SPEEDS: Each sentence takes between 8 and 14 seconds to cross
+            const duration = (8 + Math.random() * 6) + 's';
             span.style.animationDuration = duration;
 
-            // Even numbers travel right, odd numbers travel left
+            // STAGGER START TIMES: Delays them up to 10 seconds so they don't all start at once
+            const delay = (Math.random() * 10) + 's';
+            span.style.animationDelay = delay;
+
+            // This tells the CSS to repeat the movement forever
+            span.style.animationIterationCount = 'infinite';
+
+            // Alternate directions
             if (i % 2 === 0) {
                 span.style.animationName = 'streamRight';
             } else {
@@ -124,18 +129,7 @@
             }
 
             container.appendChild(span);
-
-            // Clean up elements from memory after they exit the viewing zone
-            span.addEventListener('animationend', () => {
-                span.remove();
-            });
         }
-
-        // Smoothly fade the primary headline into the screen center after 3.5 seconds
-        setTimeout(() => {
-            mainText.style.transition = 'opacity 1.5s ease';
-            mainText.style.opacity = '1';
-        }, 3500);
     });
     </script>
 
